@@ -1,0 +1,100 @@
+classdef SysObjVREP < matlab.System & matlab.system.mixin.CustomIcon
+% SysObjVREP - connect to VREP and execute Remote API functions
+%
+
+%#codegen 
+% Copyright 2013 The MathWorks, Inc.
+
+  properties (Access = private)
+    % Pre-computed constants.
+    m_vrep;
+    m_clientID;
+    m_h_Objects_Scene;
+    m_h_object;
+    m_X_a_0;
+
+  end
+
+  properties (Nontunable)
+      % TrueCoefficients Actual Filter Coefficients
+      TrueCoefficients = 0;
+      
+      % NumCoefficients Number of Filter Coefficients
+      NumCoefficients = 32;
+  end
+
+  
+  properties (DiscreteState) 
+      X;
+      H;
+  end
+  
+  methods
+    function this = testSysObj(varargin)
+        setProperties(this, nargin, varargin{:});
+    end
+  end
+  
+  methods(Static, Access=protected)
+      
+      function header = getHeaderImpl
+          header = matlab.system.display.Header(...
+              'slexSysIdentMATLABSystemLMSAdaptSysObj', ...
+              'Title', 'LMS Adaptive Filter');
+      end
+      
+      function groups = getPropertyGroupsImpl
+          firstGroup = matlab.system.display.SectionGroup(...
+              'Title', 'General', ...
+              'PropertyList', {'Mu'});
+            
+          secondGroup = matlab.system.display.SectionGroup(...
+              'Title', 'Coefficients', ...
+              'PropertyList', {'TrueCoefficients', 'NumCoefficients'});
+            
+          groups = [firstGroup, secondGroup];
+      end
+  
+  end
+  
+  methods(Access=protected)
+
+      function setupImpl(obj, ~, ~)
+          obj.X = zeros(obj.NumCoefficients,1);
+          obj.H = zeros(obj.NumCoefficients,1);
+      end
+      
+      function resetImpl(obj)
+          obj.X = zeros(obj.NumCoefficients,1);
+          obj.H = zeros(obj.NumCoefficients,1);
+      end
+      
+      function [y, e_norm] = stepImpl(this, d, u)
+          tmp = this.X(1:this.NumCoefficients-1);
+          this.X(2:this.NumCoefficients,1) = tmp;
+          this.X(1,1) = u;
+          y = this.X'*this.H;
+          e = d-y;
+          this.H = this.H+this.Mu*e*this.X;
+          e_norm = norm(this.TrueCoefficients'-this.H);
+      end
+    
+      function num = getNumInputsImpl(~)
+          num = 2;
+      end
+    
+      function num = getNumOutputsImpl(~)
+          num = 0;
+      end
+
+      function icon = getIconImpl(~)
+          icon = sprintf('LMS Adaptive\nFilter');
+      end
+        
+        function [name1, name2] = getInputNamesImpl(~)
+            name1 = 'Desired';
+            name2 = 'Actual';
+        end
+   
+  end
+end
