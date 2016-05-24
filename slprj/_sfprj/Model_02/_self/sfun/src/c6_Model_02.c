@@ -49,7 +49,6 @@ static void set_sim_state_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance
   const mxArray *c6_st);
 static void finalize_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance);
 static void sf_gateway_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance);
-static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance);
 static void initSimStructsc6_Model_02(SFc6_Model_02InstanceStruct *chartInstance);
 static void c6_fn_VectorToSkewSymmetricTensor(SFc6_Model_02InstanceStruct
   *chartInstance, real_T c6_v[3], real_T c6_SkewSymmetricTensor[9]);
@@ -242,59 +241,15 @@ static void finalize_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
 static void sf_gateway_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
 {
   int32_T c6_i2;
-  int32_T c6_i3;
-  int32_T c6_i4;
-  int32_T c6_i5;
-  real_T *c6_n;
-  real_T *c6_t_Kalman;
-  real_T (*c6_M)[9];
-  real_T (*c6_p)[3];
-  real_T (*c6_Phi)[144];
-  real_T (*c6_X_a)[13];
-  c6_M = (real_T (*)[9])ssGetInputPortSignal(chartInstance->S, 4);
-  c6_p = (real_T (*)[3])ssGetInputPortSignal(chartInstance->S, 3);
-  c6_t_Kalman = (real_T *)ssGetInputPortSignal(chartInstance->S, 2);
-  c6_n = (real_T *)ssGetInputPortSignal(chartInstance->S, 1);
-  c6_Phi = (real_T (*)[144])ssGetOutputPortSignal(chartInstance->S, 1);
-  c6_X_a = (real_T (*)[13])ssGetInputPortSignal(chartInstance->S, 0);
-  _SFD_SYMBOL_SCOPE_PUSH(0U, 0U);
-  _sfTime_ = sf_get_time(chartInstance->S);
-  _SFD_CC_CALL(CHART_ENTER_SFUNCTION_TAG, 5U, chartInstance->c6_sfEvent);
-  for (c6_i2 = 0; c6_i2 < 13; c6_i2++) {
-    _SFD_DATA_RANGE_CHECK((*c6_X_a)[c6_i2], 0U);
-  }
-
-  chartInstance->c6_sfEvent = CALL_EVENT;
-  c6_chartstep_c6_Model_02(chartInstance);
-  _SFD_SYMBOL_SCOPE_POP();
-  _SFD_CHECK_FOR_STATE_INCONSISTENCY(_Model_02MachineNumber_,
-    chartInstance->chartNumber, chartInstance->instanceNumber);
-  for (c6_i3 = 0; c6_i3 < 144; c6_i3++) {
-    _SFD_DATA_RANGE_CHECK((*c6_Phi)[c6_i3], 1U);
-  }
-
-  _SFD_DATA_RANGE_CHECK(*c6_n, 2U);
-  _SFD_DATA_RANGE_CHECK(*c6_t_Kalman, 3U);
-  for (c6_i4 = 0; c6_i4 < 3; c6_i4++) {
-    _SFD_DATA_RANGE_CHECK((*c6_p)[c6_i4], 4U);
-  }
-
-  for (c6_i5 = 0; c6_i5 < 9; c6_i5++) {
-    _SFD_DATA_RANGE_CHECK((*c6_M)[c6_i5], 5U);
-  }
-}
-
-static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
-{
   real_T c6_hoistedGlobal;
   real_T c6_b_hoistedGlobal;
-  int32_T c6_i6;
+  int32_T c6_i3;
   real_T c6_X_a[13];
   real_T c6_n;
   real_T c6_t_Kalman;
-  int32_T c6_i7;
+  int32_T c6_i4;
   real_T c6_p[3];
-  int32_T c6_i8;
+  int32_T c6_i5;
   real_T c6_M[9];
   uint32_T c6_debug_family_var_map[10];
   real_T c6_Phi_t[36];
@@ -317,10 +272,13 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
   real_T c6_c;
   real_T c6_dv1[3];
   real_T c6_b[9];
-  int32_T c6_i9;
+  int32_T c6_i6;
   real_T c6_b_b;
-  int32_T c6_i10;
+  int32_T c6_i7;
   real_T c6_dv2[9];
+  int32_T c6_i8;
+  int32_T c6_i9;
+  int32_T c6_i10;
   int32_T c6_i11;
   int32_T c6_i12;
   int32_T c6_i13;
@@ -335,11 +293,8 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
   int32_T c6_i22;
   int32_T c6_i23;
   int32_T c6_i24;
-  int32_T c6_i25;
-  int32_T c6_i26;
-  int32_T c6_i27;
   real_T c6_b_X_a[13];
-  int32_T c6_i28;
+  int32_T c6_i25;
   real_T c6_b_p[3];
   real_T c6_b_t_Kalman;
   uint32_T c6_c_debug_family_var_map[9];
@@ -348,41 +303,44 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
   real_T c6_A[36];
   real_T c6_c_nargin = 3.0;
   real_T c6_c_nargout = 1.0;
-  int32_T c6_i29;
-  int32_T c6_i30;
-  int32_T c6_i31;
+  int32_T c6_i26;
+  int32_T c6_i27;
+  int32_T c6_i28;
   real_T c6_c_p[3];
-  int32_T c6_i32;
+  int32_T c6_i29;
   real_T c6_b_omega[3];
   uint32_T c6_d_debug_family_var_map[5];
   real_T c6_d_nargin = 2.0;
   real_T c6_d_nargout = 1.0;
-  int32_T c6_i33;
+  int32_T c6_i30;
   real_T c6_c_omega[3];
+  int32_T c6_i31;
+  int32_T c6_i32;
+  int32_T c6_i33;
   int32_T c6_i34;
   int32_T c6_i35;
   int32_T c6_i36;
   int32_T c6_i37;
   int32_T c6_i38;
+  static real_T c6_y[9] = { 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.5 };
+
   int32_T c6_i39;
   int32_T c6_i40;
   int32_T c6_i41;
-  static real_T c6_y[9] = { 0.5, 0.0, 0.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.5 };
-
   int32_T c6_i42;
   int32_T c6_i43;
   int32_T c6_i44;
   int32_T c6_i45;
   int32_T c6_i46;
-  int32_T c6_i47;
-  int32_T c6_i48;
-  int32_T c6_i49;
   real_T c6_e_a[36];
   real_T c6_c_b;
-  int32_T c6_i50;
-  int32_T c6_i51;
+  int32_T c6_i47;
+  int32_T c6_i48;
   real_T c6_f_a[36];
   real_T c6_dv3[36];
+  int32_T c6_i49;
+  int32_T c6_i50;
+  int32_T c6_i51;
   int32_T c6_i52;
   int32_T c6_i53;
   int32_T c6_i54;
@@ -411,21 +369,29 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
   c6_c_n = (real_T *)ssGetInputPortSignal(chartInstance->S, 1);
   c6_b_Phi = (real_T (*)[144])ssGetOutputPortSignal(chartInstance->S, 1);
   c6_c_X_a = (real_T (*)[13])ssGetInputPortSignal(chartInstance->S, 0);
+  _SFD_SYMBOL_SCOPE_PUSH(0U, 0U);
+  _sfTime_ = sf_get_time(chartInstance->S);
+  _SFD_CC_CALL(CHART_ENTER_SFUNCTION_TAG, 5U, chartInstance->c6_sfEvent);
+  for (c6_i2 = 0; c6_i2 < 13; c6_i2++) {
+    _SFD_DATA_RANGE_CHECK((*c6_c_X_a)[c6_i2], 0U);
+  }
+
+  chartInstance->c6_sfEvent = CALL_EVENT;
   _SFD_CC_CALL(CHART_ENTER_DURING_FUNCTION_TAG, 5U, chartInstance->c6_sfEvent);
   c6_hoistedGlobal = *c6_c_n;
   c6_b_hoistedGlobal = *c6_c_t_Kalman;
-  for (c6_i6 = 0; c6_i6 < 13; c6_i6++) {
-    c6_X_a[c6_i6] = (*c6_c_X_a)[c6_i6];
+  for (c6_i3 = 0; c6_i3 < 13; c6_i3++) {
+    c6_X_a[c6_i3] = (*c6_c_X_a)[c6_i3];
   }
 
   c6_n = c6_hoistedGlobal;
   c6_t_Kalman = c6_b_hoistedGlobal;
-  for (c6_i7 = 0; c6_i7 < 3; c6_i7++) {
-    c6_p[c6_i7] = (*c6_d_p)[c6_i7];
+  for (c6_i4 = 0; c6_i4 < 3; c6_i4++) {
+    c6_p[c6_i4] = (*c6_d_p)[c6_i4];
   }
 
-  for (c6_i8 = 0; c6_i8 < 9; c6_i8++) {
-    c6_M[c6_i8] = (*c6_c_M)[c6_i8];
+  for (c6_i5 = 0; c6_i5 < 9; c6_i5++) {
+    c6_M[c6_i5] = (*c6_c_M)[c6_i5];
   }
 
   _SFD_SYMBOL_SCOPE_PUSH_EML(0U, 10U, 10U, c6_debug_family_names,
@@ -489,73 +455,73 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
   c6_dv1[1] = 0.0;
   c6_dv1[2] = c6_b_n;
   c6_fn_VectorToSkewSymmetricTensor(chartInstance, c6_dv1, c6_b);
-  for (c6_i9 = 0; c6_i9 < 9; c6_i9++) {
-    c6_b[c6_i9] *= 2.0;
+  for (c6_i6 = 0; c6_i6 < 9; c6_i6++) {
+    c6_b[c6_i6] *= 2.0;
   }
 
   c6_b_b = c6_t_delta;
-  for (c6_i10 = 0; c6_i10 < 9; c6_i10++) {
-    c6_b[c6_i10] *= c6_b_b;
+  for (c6_i7 = 0; c6_i7 < 9; c6_i7++) {
+    c6_b[c6_i7] *= c6_b_b;
   }
 
   c6_eye(chartInstance, c6_dv2);
-  for (c6_i11 = 0; c6_i11 < 9; c6_i11++) {
-    c6_Phi_t22[c6_i11] = c6_dv2[c6_i11] - c6_b[c6_i11];
+  for (c6_i8 = 0; c6_i8 < 9; c6_i8++) {
+    c6_Phi_t22[c6_i8] = c6_dv2[c6_i8] - c6_b[c6_i8];
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 73);
   c6_eye(chartInstance, c6_dv2);
-  c6_i12 = 0;
-  c6_i13 = 0;
-  for (c6_i14 = 0; c6_i14 < 3; c6_i14++) {
-    for (c6_i15 = 0; c6_i15 < 3; c6_i15++) {
-      c6_Phi_t[c6_i15 + c6_i12] = c6_dv2[c6_i15 + c6_i13];
+  c6_i9 = 0;
+  c6_i10 = 0;
+  for (c6_i11 = 0; c6_i11 < 3; c6_i11++) {
+    for (c6_i12 = 0; c6_i12 < 3; c6_i12++) {
+      c6_Phi_t[c6_i12 + c6_i9] = c6_dv2[c6_i12 + c6_i10];
     }
 
-    c6_i12 += 6;
-    c6_i13 += 3;
+    c6_i9 += 6;
+    c6_i10 += 3;
   }
 
-  c6_i16 = 0;
+  c6_i13 = 0;
+  c6_i14 = 0;
+  for (c6_i15 = 0; c6_i15 < 3; c6_i15++) {
+    for (c6_i16 = 0; c6_i16 < 3; c6_i16++) {
+      c6_Phi_t[(c6_i16 + c6_i13) + 18] = c6_Phi_t12[c6_i16 + c6_i14];
+    }
+
+    c6_i13 += 6;
+    c6_i14 += 3;
+  }
+
   c6_i17 = 0;
   for (c6_i18 = 0; c6_i18 < 3; c6_i18++) {
     for (c6_i19 = 0; c6_i19 < 3; c6_i19++) {
-      c6_Phi_t[(c6_i19 + c6_i16) + 18] = c6_Phi_t12[c6_i19 + c6_i17];
+      c6_Phi_t[(c6_i19 + c6_i17) + 3] = 0.0;
     }
 
-    c6_i16 += 6;
-    c6_i17 += 3;
+    c6_i17 += 6;
   }
 
   c6_i20 = 0;
-  for (c6_i21 = 0; c6_i21 < 3; c6_i21++) {
-    for (c6_i22 = 0; c6_i22 < 3; c6_i22++) {
-      c6_Phi_t[(c6_i22 + c6_i20) + 3] = 0.0;
+  c6_i21 = 0;
+  for (c6_i22 = 0; c6_i22 < 3; c6_i22++) {
+    for (c6_i23 = 0; c6_i23 < 3; c6_i23++) {
+      c6_Phi_t[(c6_i23 + c6_i20) + 21] = c6_Phi_t22[c6_i23 + c6_i21];
     }
 
     c6_i20 += 6;
-  }
-
-  c6_i23 = 0;
-  c6_i24 = 0;
-  for (c6_i25 = 0; c6_i25 < 3; c6_i25++) {
-    for (c6_i26 = 0; c6_i26 < 3; c6_i26++) {
-      c6_Phi_t[(c6_i26 + c6_i23) + 21] = c6_Phi_t22[c6_i26 + c6_i24];
-    }
-
-    c6_i23 += 6;
-    c6_i24 += 3;
+    c6_i21 += 3;
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, -73);
   _SFD_SYMBOL_SCOPE_POP();
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 10);
-  for (c6_i27 = 0; c6_i27 < 13; c6_i27++) {
-    c6_b_X_a[c6_i27] = c6_X_a[c6_i27];
+  for (c6_i24 = 0; c6_i24 < 13; c6_i24++) {
+    c6_b_X_a[c6_i24] = c6_X_a[c6_i24];
   }
 
-  for (c6_i28 = 0; c6_i28 < 3; c6_i28++) {
-    c6_b_p[c6_i28] = c6_p[c6_i28];
+  for (c6_i25 = 0; c6_i25 < 3; c6_i25++) {
+    c6_b_p[c6_i25] = c6_p[c6_i25];
   }
 
   c6_b_t_Kalman = c6_t_Kalman;
@@ -581,22 +547,22 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
     c6_c_sf_marshallIn);
   CV_EML_FCN(0, 1);
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 23);
-  for (c6_i29 = 0; c6_i29 < 36; c6_i29++) {
-    c6_Phi_r[c6_i29] = 0.0;
+  for (c6_i26 = 0; c6_i26 < 36; c6_i26++) {
+    c6_Phi_r[c6_i26] = 0.0;
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 24);
-  for (c6_i30 = 0; c6_i30 < 3; c6_i30++) {
-    c6_omega[c6_i30] = c6_b_X_a[c6_i30 + 4];
+  for (c6_i27 = 0; c6_i27 < 3; c6_i27++) {
+    c6_omega[c6_i27] = c6_b_X_a[c6_i27 + 4];
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 25);
-  for (c6_i31 = 0; c6_i31 < 3; c6_i31++) {
-    c6_c_p[c6_i31] = c6_b_p[c6_i31];
+  for (c6_i28 = 0; c6_i28 < 3; c6_i28++) {
+    c6_c_p[c6_i28] = c6_b_p[c6_i28];
   }
 
-  for (c6_i32 = 0; c6_i32 < 3; c6_i32++) {
-    c6_b_omega[c6_i32] = c6_omega[c6_i32];
+  for (c6_i29 = 0; c6_i29 < 3; c6_i29++) {
+    c6_b_omega[c6_i29] = c6_omega[c6_i29];
   }
 
   _SFD_SYMBOL_SCOPE_PUSH_EML(0U, 5U, 5U, c6_d_debug_family_names,
@@ -625,122 +591,138 @@ static void c6_chartstep_c6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, -48);
   _SFD_SYMBOL_SCOPE_POP();
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 27);
-  for (c6_i33 = 0; c6_i33 < 3; c6_i33++) {
-    c6_c_omega[c6_i33] = c6_omega[c6_i33];
+  for (c6_i30 = 0; c6_i30 < 3; c6_i30++) {
+    c6_c_omega[c6_i30] = c6_omega[c6_i30];
   }
 
   c6_fn_VectorToSkewSymmetricTensor(chartInstance, c6_c_omega, c6_dv2);
-  c6_i34 = 0;
-  c6_i35 = 0;
-  for (c6_i36 = 0; c6_i36 < 3; c6_i36++) {
-    for (c6_i37 = 0; c6_i37 < 3; c6_i37++) {
-      c6_A[c6_i37 + c6_i34] = -c6_dv2[c6_i37 + c6_i35];
+  c6_i31 = 0;
+  c6_i32 = 0;
+  for (c6_i33 = 0; c6_i33 < 3; c6_i33++) {
+    for (c6_i34 = 0; c6_i34 < 3; c6_i34++) {
+      c6_A[c6_i34 + c6_i31] = -c6_dv2[c6_i34 + c6_i32];
     }
 
-    c6_i34 += 6;
-    c6_i35 += 3;
+    c6_i31 += 6;
+    c6_i32 += 3;
   }
 
-  c6_i38 = 0;
+  c6_i35 = 0;
+  c6_i36 = 0;
+  for (c6_i37 = 0; c6_i37 < 3; c6_i37++) {
+    for (c6_i38 = 0; c6_i38 < 3; c6_i38++) {
+      c6_A[(c6_i38 + c6_i35) + 18] = c6_y[c6_i38 + c6_i36];
+    }
+
+    c6_i35 += 6;
+    c6_i36 += 3;
+  }
+
   c6_i39 = 0;
   for (c6_i40 = 0; c6_i40 < 3; c6_i40++) {
     for (c6_i41 = 0; c6_i41 < 3; c6_i41++) {
-      c6_A[(c6_i41 + c6_i38) + 18] = c6_y[c6_i41 + c6_i39];
+      c6_A[(c6_i41 + c6_i39) + 3] = 0.0;
     }
 
-    c6_i38 += 6;
-    c6_i39 += 3;
+    c6_i39 += 6;
   }
 
   c6_i42 = 0;
-  for (c6_i43 = 0; c6_i43 < 3; c6_i43++) {
-    for (c6_i44 = 0; c6_i44 < 3; c6_i44++) {
-      c6_A[(c6_i44 + c6_i42) + 3] = 0.0;
+  c6_i43 = 0;
+  for (c6_i44 = 0; c6_i44 < 3; c6_i44++) {
+    for (c6_i45 = 0; c6_i45 < 3; c6_i45++) {
+      c6_A[(c6_i45 + c6_i42) + 21] = c6_b_M[c6_i45 + c6_i43];
     }
 
     c6_i42 += 6;
-  }
-
-  c6_i45 = 0;
-  c6_i46 = 0;
-  for (c6_i47 = 0; c6_i47 < 3; c6_i47++) {
-    for (c6_i48 = 0; c6_i48 < 3; c6_i48++) {
-      c6_A[(c6_i48 + c6_i45) + 21] = c6_b_M[c6_i48 + c6_i46];
-    }
-
-    c6_i45 += 6;
-    c6_i46 += 3;
+    c6_i43 += 3;
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 28);
-  for (c6_i49 = 0; c6_i49 < 36; c6_i49++) {
-    c6_e_a[c6_i49] = c6_A[c6_i49];
+  for (c6_i46 = 0; c6_i46 < 36; c6_i46++) {
+    c6_e_a[c6_i46] = c6_A[c6_i46];
   }
 
   c6_c_b = c6_b_t_Kalman;
-  for (c6_i50 = 0; c6_i50 < 36; c6_i50++) {
-    c6_e_a[c6_i50] *= c6_c_b;
+  for (c6_i47 = 0; c6_i47 < 36; c6_i47++) {
+    c6_e_a[c6_i47] *= c6_c_b;
   }
 
-  for (c6_i51 = 0; c6_i51 < 36; c6_i51++) {
-    c6_f_a[c6_i51] = c6_e_a[c6_i51];
+  for (c6_i48 = 0; c6_i48 < 36; c6_i48++) {
+    c6_f_a[c6_i48] = c6_e_a[c6_i48];
   }
 
   c6_expm(chartInstance, c6_f_a, c6_dv3);
-  for (c6_i52 = 0; c6_i52 < 36; c6_i52++) {
-    c6_Phi_r[c6_i52] = c6_dv3[c6_i52];
+  for (c6_i49 = 0; c6_i49 < 36; c6_i49++) {
+    c6_Phi_r[c6_i49] = c6_dv3[c6_i49];
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, -28);
   _SFD_SYMBOL_SCOPE_POP();
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, 11);
-  c6_i53 = 0;
+  c6_i50 = 0;
+  c6_i51 = 0;
+  for (c6_i52 = 0; c6_i52 < 6; c6_i52++) {
+    for (c6_i53 = 0; c6_i53 < 6; c6_i53++) {
+      c6_Phi[c6_i53 + c6_i50] = c6_Phi_r[c6_i53 + c6_i51];
+    }
+
+    c6_i50 += 12;
+    c6_i51 += 6;
+  }
+
   c6_i54 = 0;
   for (c6_i55 = 0; c6_i55 < 6; c6_i55++) {
     for (c6_i56 = 0; c6_i56 < 6; c6_i56++) {
-      c6_Phi[c6_i56 + c6_i53] = c6_Phi_r[c6_i56 + c6_i54];
+      c6_Phi[(c6_i56 + c6_i54) + 72] = 0.0;
     }
 
-    c6_i53 += 12;
-    c6_i54 += 6;
+    c6_i54 += 12;
   }
 
   c6_i57 = 0;
   for (c6_i58 = 0; c6_i58 < 6; c6_i58++) {
     for (c6_i59 = 0; c6_i59 < 6; c6_i59++) {
-      c6_Phi[(c6_i59 + c6_i57) + 72] = 0.0;
+      c6_Phi[(c6_i59 + c6_i57) + 6] = 0.0;
     }
 
     c6_i57 += 12;
   }
 
   c6_i60 = 0;
-  for (c6_i61 = 0; c6_i61 < 6; c6_i61++) {
-    for (c6_i62 = 0; c6_i62 < 6; c6_i62++) {
-      c6_Phi[(c6_i62 + c6_i60) + 6] = 0.0;
+  c6_i61 = 0;
+  for (c6_i62 = 0; c6_i62 < 6; c6_i62++) {
+    for (c6_i63 = 0; c6_i63 < 6; c6_i63++) {
+      c6_Phi[(c6_i63 + c6_i60) + 78] = c6_Phi_t[c6_i63 + c6_i61];
     }
 
     c6_i60 += 12;
-  }
-
-  c6_i63 = 0;
-  c6_i64 = 0;
-  for (c6_i65 = 0; c6_i65 < 6; c6_i65++) {
-    for (c6_i66 = 0; c6_i66 < 6; c6_i66++) {
-      c6_Phi[(c6_i66 + c6_i63) + 78] = c6_Phi_t[c6_i66 + c6_i64];
-    }
-
-    c6_i63 += 12;
-    c6_i64 += 6;
+    c6_i61 += 6;
   }
 
   _SFD_EML_CALL(0U, chartInstance->c6_sfEvent, -11);
   _SFD_SYMBOL_SCOPE_POP();
-  for (c6_i67 = 0; c6_i67 < 144; c6_i67++) {
-    (*c6_b_Phi)[c6_i67] = c6_Phi[c6_i67];
+  for (c6_i64 = 0; c6_i64 < 144; c6_i64++) {
+    (*c6_b_Phi)[c6_i64] = c6_Phi[c6_i64];
   }
 
   _SFD_CC_CALL(EXIT_OUT_OF_FUNCTION_TAG, 5U, chartInstance->c6_sfEvent);
+  _SFD_SYMBOL_SCOPE_POP();
+  _SFD_CHECK_FOR_STATE_INCONSISTENCY(_Model_02MachineNumber_,
+    chartInstance->chartNumber, chartInstance->instanceNumber);
+  for (c6_i65 = 0; c6_i65 < 144; c6_i65++) {
+    _SFD_DATA_RANGE_CHECK((*c6_b_Phi)[c6_i65], 1U);
+  }
+
+  _SFD_DATA_RANGE_CHECK(*c6_c_n, 2U);
+  _SFD_DATA_RANGE_CHECK(*c6_c_t_Kalman, 3U);
+  for (c6_i66 = 0; c6_i66 < 3; c6_i66++) {
+    _SFD_DATA_RANGE_CHECK((*c6_d_p)[c6_i66], 4U);
+  }
+
+  for (c6_i67 = 0; c6_i67 < 9; c6_i67++) {
+    _SFD_DATA_RANGE_CHECK((*c6_c_M)[c6_i67], 5U);
+  }
 }
 
 static void initSimStructsc6_Model_02(SFc6_Model_02InstanceStruct *chartInstance)
@@ -799,7 +781,7 @@ static void init_script_number_translation(uint32_T c6_machineNumber, uint32_T
   (void)c6_machineNumber;
   _SFD_SCRIPT_TRANSLATION(c6_chartNumber, c6_instanceNumber, 0U,
     sf_debug_get_script_id(
-    "C:\\Users\\Iseberg\\Documents\\MATLAB\\Model_02_Simulink(Aghili, 2007)\\fn_VectorToSkewSymmetricTensor.m"));
+    "C:\\Users\\Iseberg-2\\Documents\\MATLAB\\Model_02_Simulink-Aghili--2007-\\fn_VectorToSkewSymmetricTensor.m"));
 }
 
 static const mxArray *c6_sf_marshallOut(void *chartInstanceVoid, void *c6_inData)
@@ -2098,9 +2080,9 @@ static void c6_info_helper(const mxArray **c6_info)
   sf_mex_addfield(*c6_info, c6_emlrt_marshallOut("double"), "dominantType",
                   "dominantType", 31);
   sf_mex_addfield(*c6_info, c6_emlrt_marshallOut(
-    "[E]C:/Users/Iseberg/Documents/MATLAB/Model_02_Simulink(Aghili, 2007)/fn_VectorToSkewSymmetricTensor.m"),
+    "[E]C:/Users/Iseberg-2/Documents/MATLAB/Model_02_Simulink-Aghili--2007-/fn_VectorToSkewSymmetricTensor.m"),
                   "resolved", "resolved", 31);
-  sf_mex_addfield(*c6_info, c6_b_emlrt_marshallOut(1447321639U), "fileTimeLo",
+  sf_mex_addfield(*c6_info, c6_b_emlrt_marshallOut(1464115826U), "fileTimeLo",
                   "fileTimeLo", 31);
   sf_mex_addfield(*c6_info, c6_b_emlrt_marshallOut(0U), "fileTimeHi",
                   "fileTimeHi", 31);
@@ -8590,10 +8572,10 @@ static void mdlSetWorkWidths_c6_Model_02(SimStruct *S)
   }
 
   ssSetOptions(S,ssGetOptions(S)|SS_OPTION_WORKS_WITH_CODE_REUSE);
-  ssSetChecksum0(S,(625698298U));
-  ssSetChecksum1(S,(3635411211U));
-  ssSetChecksum2(S,(2628231749U));
-  ssSetChecksum3(S,(1359873795U));
+  ssSetChecksum0(S,(4282542417U));
+  ssSetChecksum1(S,(2404387729U));
+  ssSetChecksum2(S,(4198823143U));
+  ssSetChecksum3(S,(63361276U));
   ssSetmdlDerivatives(S, NULL);
   ssSetExplicitFCSSCtrl(S,1);
   ssSupportsMultipleExecInstances(S,1);
