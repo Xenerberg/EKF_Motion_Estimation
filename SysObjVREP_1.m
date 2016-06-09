@@ -67,7 +67,8 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
     function set.sceneFileName(obj,varargin)
         obj.sceneFileName = varargin{1};
         if ~(isempty(obj.sceneFileName))
-           return_msg = obj.m_vrep.simxLoadScene(obj.m_clientID,obj.sceneFileName,0,obj.m_vrep.simx_opmode_blocking);
+           string_filename = strcat(cd,sprintf('\\%s',obj.sceneFileName));           
+           return_msg = obj.m_vrep.simxLoadScene(obj.m_clientID,string_filename,0,obj.m_vrep.simx_opmode_blocking);
            if return_msg ~= 0
               error('Problem in loading scene file. Try again.'); 
            end
