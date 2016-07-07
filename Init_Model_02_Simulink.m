@@ -14,187 +14,13 @@ Cov_r = ...
   [0.003 0 0;
    0 0.003 0;
    0 0 0.003];
-
-P_d = Simulink.Signal;
-P_d.CoderInfo.StorageClass = 'Auto';
-P_d.CoderInfo.Alias = '';
-P_d.CoderInfo.Alignment = -1;
-P_d.CoderInfo.CustomStorageClass = 'Default';
-P_d.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-P_d.Description = '';
-P_d.DataType = 'double';
-P_d.Min = [];
-P_d.Max = [];
-P_d.DocUnits = '';
-P_d.Dimensions = [12 12];
-P_d.DimensionsMode = 'auto';
-P_d.Complexity = 'auto';
-P_d.SampleTime = -1;
-P_d.SamplingMode = 'auto';
-P_d.InitialValue = '';
-
-P_k = Simulink.Signal;
-P_k.CoderInfo.StorageClass = 'Auto';
-P_k.CoderInfo.Alias = '';
-P_k.CoderInfo.Alignment = -1;
-P_k.CoderInfo.CustomStorageClass = 'Default';
-P_k.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-P_k.Description = '';
-P_k.DataType = 'double';
-P_k.Min = [];
-P_k.Max = [];
-P_k.DocUnits = '';
-P_k.Dimensions = [12 12];
-P_k.DimensionsMode = 'auto';
-P_k.Complexity = 'auto';
-P_k.SampleTime = -1;
-P_k.SamplingMode = 'auto';
-P_k.InitialValue = '';
-
-U_n_d = Simulink.Signal;
-U_n_d.CoderInfo.StorageClass = 'Auto';
-U_n_d.CoderInfo.Alias = '';
-U_n_d.CoderInfo.Alignment = -1;
-U_n_d.CoderInfo.CustomStorageClass = 'Default';
-U_n_d.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-U_n_d.Description = '';
-U_n_d.DataType = 'double';
-U_n_d.Min = [];
-U_n_d.Max = [];
-U_n_d.DocUnits = '';
-U_n_d.Dimensions = [12 12];
-U_n_d.DimensionsMode = 'auto';
-U_n_d.Complexity = 'auto';
-U_n_d.SampleTime = -1;
-U_n_d.SamplingMode = 'auto';
-U_n_d.InitialValue = '';
-
-W_0 = ...
-  [1 0 0 0 0 0;
-   0 1 0 0 0 0;
-   0 0 1 0 0 0;
-   0 0 0 1 0 0;
-   0 0 0 0 1 0;
-   0 0 0 0 0 1];
-
-X_a_0 = [0; 0; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0];
-
-X_a_0_bus = struct;
-X_a_0_bus.block = [];
-X_a_0_bus.busName = 'slBus5';
-
-X_a_0_sim = struct;
-X_a_0_sim.X_a_0_Model_02 = [0; 0.562543950463012; 0.78756153064821666; ...
-                            0.22501758018520479; 0.1125087900926024; 0.5; ...
-                            -0.1; -0.7; 2.5; 1; -1; 0.01; -0.01; 0.02];
-X_a_0_sim.eulerAngles_X_a_0 = [1.9207 -0.076 2.6382];
-
-X_a_0_struct = struct;
-X_a_0_struct.q = struct;
-X_a_0_struct.q.q_1 = 0;
-X_a_0_struct.q.q_2 = 0;
-X_a_0_struct.q.q_3 = 0;
-X_a_0_struct.q.q_0 = 1;
-X_a_0_struct.omega = struct;
-X_a_0_struct.omega.omega_x = 0;
-X_a_0_struct.omega.omega_y = 0;
-X_a_0_struct.omega.omega_z = 0;
-X_a_0_struct.r = struct;
-X_a_0_struct.r.r_x = 0;
-X_a_0_struct.r.r_y = 0;
-X_a_0_struct.r.r_z = 0;
-X_a_0_struct.r_dot = struct;
-X_a_0_struct.r_dot.r_x_dot = 0;
-X_a_0_struct.r_dot.r_y_dot = 0;
-X_a_0_struct.r_dot.r_z_dot = 0;
-
-e_force_x = 0;
-
-e_force_y = 0;
-
-e_force_z = 0;
-
-flag_OOSM_update = Simulink.Signal;
-flag_OOSM_update.CoderInfo.StorageClass = 'Auto';
-flag_OOSM_update.CoderInfo.Alias = '';
-flag_OOSM_update.CoderInfo.Alignment = -1;
-flag_OOSM_update.CoderInfo.CustomStorageClass = 'Default';
-flag_OOSM_update.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-flag_OOSM_update.Description = '';
-flag_OOSM_update.DataType = 'boolean';
-flag_OOSM_update.Min = [];
-flag_OOSM_update.Max = [];
-flag_OOSM_update.DocUnits = '';
-flag_OOSM_update.Dimensions = 1;
-flag_OOSM_update.DimensionsMode = 'auto';
-flag_OOSM_update.Complexity = 'auto';
-flag_OOSM_update.SampleTime = -1;
-flag_OOSM_update.SamplingMode = 'auto';
-flag_OOSM_update.InitialValue = '';
-
-flag_queue = Simulink.Signal;
-flag_queue.CoderInfo.StorageClass = 'Auto';
-flag_queue.CoderInfo.Alias = '';
-flag_queue.CoderInfo.Alignment = -1;
-flag_queue.CoderInfo.CustomStorageClass = 'Default';
-flag_queue.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-flag_queue.Description = '';
-flag_queue.DataType = 'auto';
-flag_queue.Min = [];
-flag_queue.Max = [];
-flag_queue.DocUnits = '';
-flag_queue.Dimensions = 1;
-flag_queue.DimensionsMode = 'Fixed';
-flag_queue.Complexity = 'auto';
-flag_queue.SampleTime = -1;
-flag_queue.SamplingMode = 'auto';
-flag_queue.InitialValue = '';
-
 i_xx = 4;
 
 i_yy = 8;
 
 i_zz = 5;
 
-ita = [0.12; 0.05; -0.15; 0.98];
-
-lastUpdate_X_a = Simulink.Signal;
-lastUpdate_X_a.CoderInfo.StorageClass = 'Auto';
-lastUpdate_X_a.CoderInfo.Alias = '';
-lastUpdate_X_a.CoderInfo.Alignment = -1;
-lastUpdate_X_a.CoderInfo.CustomStorageClass = 'Default';
-lastUpdate_X_a.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-lastUpdate_X_a.Description = '';
-lastUpdate_X_a.DataType = 'auto';
-lastUpdate_X_a.Min = [];
-lastUpdate_X_a.Max = [];
-lastUpdate_X_a.DocUnits = '';
-lastUpdate_X_a.Dimensions = -1;
-lastUpdate_X_a.DimensionsMode = 'auto';
-lastUpdate_X_a.Complexity = 'auto';
-lastUpdate_X_a.SampleTime = -1;
-lastUpdate_X_a.SamplingMode = 'auto';
-lastUpdate_X_a.InitialValue = 'X_a_0';
-
-last_update_timestamp = Simulink.Signal;
-last_update_timestamp.CoderInfo.StorageClass = 'Auto';
-last_update_timestamp.CoderInfo.Alias = '';
-last_update_timestamp.CoderInfo.Alignment = -1;
-last_update_timestamp.CoderInfo.CustomStorageClass = 'Default';
-last_update_timestamp.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-last_update_timestamp.Description = '';
-last_update_timestamp.DataType = 'double';
-last_update_timestamp.Min = [];
-last_update_timestamp.Max = [];
-last_update_timestamp.DocUnits = '';
-last_update_timestamp.Dimensions = 1;
-last_update_timestamp.DimensionsMode = 'Fixed';
-last_update_timestamp.Complexity = 'auto';
-last_update_timestamp.SampleTime = -1;
-last_update_timestamp.SamplingMode = 'auto';
-last_update_timestamp.InitialValue = '0';
-
-n = 0.0012;
+ita = [0.12; 0.05; -0.15; 0.98];n = 0.0012;
 
 om = struct;
 om.omega_x = 0;
@@ -237,23 +63,7 @@ q_2_0 = 0;
 
 q_3_0 = 0;
 
-q_nominal_d = Simulink.Signal;
-q_nominal_d.CoderInfo.StorageClass = 'Auto';
-q_nominal_d.CoderInfo.Alias = '';
-q_nominal_d.CoderInfo.Alignment = -1;
-q_nominal_d.CoderInfo.CustomStorageClass = 'Default';
-q_nominal_d.CoderInfo.CustomAttributes.ConcurrentAccess = false;
-q_nominal_d.Description = '';
-q_nominal_d.DataType = 'double';
-q_nominal_d.Min = [];
-q_nominal_d.Max = [];
-q_nominal_d.DocUnits = '';
-q_nominal_d.Dimensions = [4 1];
-q_nominal_d.DimensionsMode = 'auto';
-q_nominal_d.Complexity = 'auto';
-q_nominal_d.SampleTime = -1;
-q_nominal_d.SamplingMode = 'auto';
-q_nominal_d.InitialValue = '';
+
 
 r = struct;
 r.r_x = 0;
@@ -305,12 +115,177 @@ tau_3 = 0;
 
 totalSimulationTime = 200;
 
+X_a_0 = [0; 0; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0];
+
+X_a_0_bus = struct;
+X_a_0_bus.block = [];
+X_a_0_bus.busName = 'slBus5';
+
+X_a_0_sim = struct;
+X_a_0_sim.X_a_0_Model_02 = [0; 0.562543950463012; 0.78756153064821666; ...
+                            0.22501758018520479; 0.1125087900926024; 0.5; ...
+                            -0.1; -0.7; 2.5; 1; -1; 0.01; -0.01; 0.02];
+X_a_0_sim.eulerAngles_X_a_0 = [1.9207 -0.076 2.6382];
+
+X_a_0_struct = struct;
+X_a_0_struct.q = struct;
+X_a_0_struct.q.q_1 = 0;
+X_a_0_struct.q.q_2 = 0;
+X_a_0_struct.q.q_3 = 0;
+X_a_0_struct.q.q_0 = 1;
+X_a_0_struct.omega = struct;
+X_a_0_struct.omega.omega_x = 0;
+X_a_0_struct.omega.omega_y = 0;
+X_a_0_struct.omega.omega_z = 0;
+X_a_0_struct.r = struct;
+X_a_0_struct.r.r_x = 0;
+X_a_0_struct.r.r_y = 0;
+X_a_0_struct.r.r_z = 0;
+X_a_0_struct.r_dot = struct;
+X_a_0_struct.r_dot.r_x_dot = 0;
+X_a_0_struct.r_dot.r_y_dot = 0;
+X_a_0_struct.r_dot.r_z_dot = 0;
+
+e_force_x = 0;
+
+e_force_y = 0;
+
+e_force_z = 0;
+
+W_0 = ...
+  [1 0 0 0 0 0;
+   0 1 0 0 0 0;
+   0 0 1 0 0 0;
+   0 0 0 1 0 0;
+   0 0 0 0 1 0;
+   0 0 0 0 0 1];
+
+P_d = Simulink.Signal;
+P_k = Simulink.Signal;
+U_n_d = Simulink.Signal;
+q_nominal_d = Simulink.Signal;
+flag_OOSM_update = Simulink.Signal;
+lastUpdate_X_a = Simulink.Signal;
+last_update_timestamp = Simulink.Signal;
 x_d = Simulink.Signal;
-x_d.CoderInfo.StorageClass = 'Auto';
-x_d.CoderInfo.Alias = '';
-x_d.CoderInfo.Alignment = -1;
-x_d.CoderInfo.CustomStorageClass = 'Default';
-x_d.CoderInfo.CustomAttributes.ConcurrentAccess = false;
+x_k = Simulink.Signal;
+
+P_d.Description = '';
+P_d.DataType = 'double';
+P_d.Min = [];
+P_d.Max = [];
+P_d.DocUnits = '';
+P_d.Dimensions = [12 12];
+P_d.DimensionsMode = 'auto';
+P_d.Complexity = 'auto';
+P_d.SampleTime = -1;
+P_d.SamplingMode = 'auto';
+P_d.InitialValue = '';
+
+
+
+P_k.Description = '';
+P_k.DataType = 'double';
+P_k.Min = [];
+P_k.Max = [];
+P_k.DocUnits = '';
+P_k.Dimensions = [12 12];
+P_k.DimensionsMode = 'auto';
+P_k.Complexity = 'auto';
+P_k.SampleTime = -1;
+P_k.SamplingMode = 'auto';
+P_k.InitialValue = '';
+
+
+U_n_d.Description = '';
+U_n_d.DataType = 'double';
+U_n_d.Min = [];
+U_n_d.Max = [];
+U_n_d.DocUnits = '';
+U_n_d.Dimensions = [12 12];
+U_n_d.DimensionsMode = 'auto';
+U_n_d.Complexity = 'auto';
+U_n_d.SampleTime = -1;
+U_n_d.SamplingMode = 'auto';
+U_n_d.InitialValue = '';
+
+
+
+
+
+q_nominal_d.Description = '';
+q_nominal_d.DataType = 'double';
+q_nominal_d.Min = [];
+q_nominal_d.Max = [];
+q_nominal_d.DocUnits = '';
+q_nominal_d.Dimensions = [4 1];
+q_nominal_d.DimensionsMode = 'auto';
+q_nominal_d.Complexity = 'auto';
+q_nominal_d.SampleTime = -1;
+q_nominal_d.SamplingMode = 'auto';
+q_nominal_d.InitialValue = '';
+
+
+flag_OOSM_update.Description = '';
+flag_OOSM_update.DataType = 'boolean';
+flag_OOSM_update.Min = [];
+flag_OOSM_update.Max = [];
+flag_OOSM_update.DocUnits = '';
+flag_OOSM_update.Dimensions = 1;
+flag_OOSM_update.DimensionsMode = 'auto';
+flag_OOSM_update.Complexity = 'auto';
+flag_OOSM_update.SampleTime = -1;
+flag_OOSM_update.SamplingMode = 'auto';
+flag_OOSM_update.InitialValue = '';
+
+flag_queue = Simulink.Signal;
+
+flag_queue.Description = '';
+flag_queue.DataType = 'auto';
+flag_queue.Min = [];
+flag_queue.Max = [];
+flag_queue.DocUnits = '';
+flag_queue.Dimensions = 1;
+flag_queue.DimensionsMode = 'Fixed';
+flag_queue.Complexity = 'auto';
+flag_queue.SampleTime = -1;
+flag_queue.SamplingMode = 'auto';
+flag_queue.InitialValue = '';
+
+
+
+
+
+lastUpdate_X_a.Description = '';
+lastUpdate_X_a.DataType = 'auto';
+lastUpdate_X_a.Min = [];
+lastUpdate_X_a.Max = [];
+lastUpdate_X_a.DocUnits = '';
+lastUpdate_X_a.Dimensions = -1;
+lastUpdate_X_a.DimensionsMode = 'auto';
+lastUpdate_X_a.Complexity = 'auto';
+lastUpdate_X_a.SampleTime = -1;
+lastUpdate_X_a.SamplingMode = 'auto';
+lastUpdate_X_a.InitialValue = 'X_a_0';
+
+
+
+last_update_timestamp.Description = '';
+last_update_timestamp.DataType = 'double';
+last_update_timestamp.Min = [];
+last_update_timestamp.Max = [];
+last_update_timestamp.DocUnits = '';
+last_update_timestamp.Dimensions = 1;
+last_update_timestamp.DimensionsMode = 'Fixed';
+last_update_timestamp.Complexity = 'auto';
+last_update_timestamp.SampleTime = -1;
+last_update_timestamp.SamplingMode = 'auto';
+last_update_timestamp.InitialValue = '0';
+
+
+
+
+
 x_d.Description = '';
 x_d.DataType = 'double';
 x_d.Min = [];
@@ -323,12 +298,8 @@ x_d.SampleTime = -1;
 x_d.SamplingMode = 'auto';
 x_d.InitialValue = '';
 
-x_k = Simulink.Signal;
-x_k.CoderInfo.StorageClass = 'Auto';
-x_k.CoderInfo.Alias = '';
-x_k.CoderInfo.Alignment = -1;
-x_k.CoderInfo.CustomStorageClass = 'Default';
-x_k.CoderInfo.CustomAttributes.ConcurrentAccess = false;
+
+
 x_k.Description = '';
 x_k.DataType = 'double';
 x_k.Min = [];
