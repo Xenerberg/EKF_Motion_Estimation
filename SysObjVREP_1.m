@@ -89,6 +89,7 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                switch(qualifier)
                    case 'Parent'
                    case 'Abs'
+                   case 'Joint'
                    otherwise
                        error('Pose reference:(%s) is incorrect.',qualifier);
                end
@@ -103,15 +104,15 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
            obj.m_ObserveObjects  = cell(0);
            obj.m_NumObservableObjects = 0;
         else
-            obj.m_ObserveObjects = varargin{1};
-            if ~(size(varargin{1},2)==2)
-                error('Observing objects format is incorrect.');
-            end
+            obj.m_ObserveObjects = varargin{1};            
             for iCount = 1:size(varargin{1},1)
+               if ~(size(varargin{1},2)==2)
+                %error('Observing objects format is incorrect.');
+               end
                qualifier = char(varargin{1}(iCount,2));
                switch(qualifier)
                    case 'Image'
-                   case 'Pose'
+                   case 'Pose'                       
                    otherwise
                        error('Data type of observable:(%s) is incorrect.',qualifier);
                end
@@ -178,25 +179,26 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
             for i=1:obj.m_NumControllableObjects
                 string_objectname = char(obj.m_ControlObjects(i,1));
                 string_mode = char(obj.m_ControlObjects(i,2));
-                
-                switch(string_mode)
-                    case 'Parent'
-                        qualifier = obj.m_vrep.sim_handle_parent;
-                    case 'Abs'
-                        qualifier = -1;
-                    otherwise
-                        qualifier = -1;
-                        
+                if strcmp(string_mode,'Parent')==1 && strcmp(string_mode,'Abs')==1
+                    switch(string_mode)
+                        case 'Parent'
+                            qualifier = obj.m_vrep.sim_handle_parent;
+                        case 'Abs'
+                            qualifier = -1;
+                        otherwise
+                            qualifier = -1;
+
+                    end
+                    [return_msg,m_h_object] = obj.m_vrep.simxGetObjectHandle(obj.m_clientID,string_objectname,obj.m_vrep.simx_opmode_blocking);
+                    if return_msg ~= 0
+                       error('Error in retrieving handle for object:%s',string_objectname); 
+                    end
+                    initialPose = cell2mat(obj.m_InitialControllablePose(i));
+                    initialOrientation = initialPose(4:6);
+                    initialPosition = initialPose(1:3);
+                    obj.m_vrep.simxSetObjectOrientation(obj.m_clientID,m_h_object,qualifier,initialOrientation, obj.m_vrep.simx_opmode_blocking);        
+                    obj.m_vrep.simxSetObjectPosition(obj.m_clientID,m_h_object,qualifier,initialPosition, obj.m_vrep.simx_opmode_blocking);
                 end
-                [return_msg,m_h_object] = obj.m_vrep.simxGetObjectHandle(obj.m_clientID,string_objectname,obj.m_vrep.simx_opmode_blocking);
-                if return_msg ~= 0
-                   error('Error in retrieving handle for object:%s',string_objectname); 
-                end
-                initialPose = cell2mat(obj.m_InitialControllablePose(i));
-                initialOrientation = initialPose(4:6);
-                initialPosition = initialPose(1:3);
-                obj.m_vrep.simxSetObjectOrientation(obj.m_clientID,m_h_object,qualifier,initialOrientation, obj.m_vrep.simx_opmode_blocking);        
-                obj.m_vrep.simxSetObjectPosition(obj.m_clientID,m_h_object,qualifier,initialPosition, obj.m_vrep.simx_opmode_blocking);
             end
             
             
@@ -215,8 +217,8 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
         end
      
       
-      function [out] = stepImpl(obj,poseInputs)
-            obj.m_vrep.simxSynchronousTrigger(obj.m_clientID);
+      function [varargout] = stepImpl(obj,poseInputs,jointAngles)
+            jointCount = 0;
             %obj.m_vrep.simxGetPingTime(obj.m_clientID);%Ensures data correctness throught triggers
             [cmd_time] = obj.m_vrep.simxGetLastCmdTime(obj.m_clientID);
             sim_time = get_param(bdroot,'SimulationTime');
@@ -224,49 +226,59 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
             %sampling time)
             %fprintf('LastCmdTime(VREP):%f; SimTime(SimulationTime):%f\n',cmd_time/1000,sim_time);
             if (abs(sim_time - (cmd_time/1000)) > 0.01*0.05) 
-                error('Error in simulation syncrhonization.\nLastCmdTime(VREP):%f; SimTime(SimulationTime):%f\n',cmd_time/1000,sim_time);
+                %error('Error in simulation syncrhonization.\nLastCmdTime(VREP):%f; SimTime(SimulationTime):%f\n',cmd_time/1000,sim_time);
                 
             end
             if (length(poseInputs) ~= 6*obj.m_NumControllableObjects)
-               error('Input pose and Number of controllable objets mismatch.\nInput pose: %d for Num Of Controllable objects:%d',length(poseInputs),obj.m_NumControllableObjects);
+               %error('Input pose and Number of controllable objets mismatch.\nInput pose: %d for Num Of Controllable objects:%d',length(poseInputs),obj.m_NumControllableObjects);
             end
             for iCount = 1:obj.m_NumControllableObjects
-                pose = poseInputs(iCount*6-5:iCount*6);
-                position = pose(1:3);
-                orientation = pose(4:6);
-                string_objectname = char(obj.m_ControlObjects(iCount,1));
-                
+
+               
+                string_objectname = char(obj.m_ControlObjects(iCount,1));                
                 [return_msg,m_h_object] = obj.m_vrep.simxGetObjectHandle(obj.m_clientID,string_objectname,obj.m_vrep.simx_opmode_blocking);
                 if return_msg ~= 0
                    error('Error in retrieving handle for object:%s',string_objectname); 
                 end
                 string_mode = char(obj.m_ControlObjects(iCount,2));
-                
-                switch(string_mode)
-                    case 'Parent'
-                        qualifier = obj.m_vrep.sim_handle_parent;
-                    case 'Abs'
-                        qualifier = -1;
-                    otherwise
-                        qualifier = -1;
-                        
+                if strcmp(string_mode,'Parent')==1 || strcmp(string_mode,'Abs')==1 
+                    pose = poseInputs(iCount*6-5:iCount*6);
+                    position = pose(1:3);
+                    orientation = pose(4:6);
+                    switch(string_mode)
+                        case 'Parent'
+                            qualifier = obj.m_vrep.sim_handle_parent;
+                        case 'Abs'
+                            qualifier = -1;
+                        otherwise
+                            qualifier = -1;
+
+                    end
+
+                    return_1 = obj.m_vrep.simxSetObjectOrientation(obj.m_clientID,m_h_object,qualifier,orientation, obj.m_vrep.simx_opmode_blocking);
+                    if return_1 ~= 0
+                        error('Error in assigning position for %s',string_objectname);
+                    end
+
+                    return_2 = obj.m_vrep.simxSetObjectPosition(obj.m_clientID,m_h_object,qualifier,position, obj.m_vrep.simx_opmode_blocking);
+                    if return_2 ~= 0
+                        error('Error in assigning orientation for %s',string_objectname);
+                    end
                 end
                 
-                return_1 = obj.m_vrep.simxSetObjectOrientation(obj.m_clientID,m_h_object,qualifier,orientation, obj.m_vrep.simx_opmode_blocking);
-                if return_1 ~= 0
-                    error('Error in assigning position for %s',string_objectname);
-                end
-                
-                return_2 = obj.m_vrep.simxSetObjectPosition(obj.m_clientID,m_h_object,qualifier,position, obj.m_vrep.simx_opmode_blocking);
-                if return_2 ~= 0
-                    error('Error in assigning orientation for %s',string_objectname);
+                if strcmp(string_mode, 'Joint')==1
+                    jointCount = jointCount + 1;
+                    [rtrn] = obj.m_vrep.simxSetJointTargetVelocity(obj.m_clientID,m_h_object,jointAngles(jointCount),obj.m_vrep.simx_opmode_blocking);
+                    if rtrn ~= 0
+                        error('Error in setting Joint velocity');
+                    end
                 end
             
             end
           
-            
+            obj.m_vrep.simxSynchronousTrigger(obj.m_clientID);
             if (obj.m_NumObservableObjects == 0)
-                out = -1;
+                varargout = -1;
             else
                 for iCount = 1:obj.m_NumObservableObjects
                     string_objectname = char(obj.m_ObserveObjects(iCount,1));
@@ -275,24 +287,39 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                     if return_msg ~= 0
                         error('Error in retrieving object handle for %s',string_objectname);
                     end
-                        
-                    [return_msg, res, imageOut] = obj.m_vrep.simxGetVisionSensorImage2(obj.m_clientID,m_h_object,0,obj.m_vrep.simx_opmode_blocking);
-                    if return_msg ~= 0
-                        error('Error in retrieving image. Error code:%d',return_msg);
+                    if strcmp(obj.m_ObserveObjects(iCount,2),'Image') == 1
+                        [return_msg, res, imageOut] = obj.m_vrep.simxGetVisionSensorImage2(obj.m_clientID,m_h_object,0,obj.m_vrep.simx_opmode_blocking);
+                        if return_msg ~= 0
+                            error('Error in retrieving image. Error code:%d',return_msg);
+                        end
+                        varargout{iCount} = rgb2gray(imageOut);
                     end
-                    out = rgb2gray(imageOut);
+                    if strcmp(obj.m_ObserveObjects(iCount,2),'Pose') == 1
+                        [return_msg,m_h_object_rel] = obj.m_vrep.simxGetObjectHandle(obj.m_clientID,char(obj.m_ObserveObjects(iCount,3)),obj.m_vrep.simx_opmode_blocking);
+                        [rtrn,ee_pos] = obj.m_vrep.simxGetObjectPosition(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);            
+                        [rtrn,temp] = obj.m_vrep.simxGetObjectOrientation(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);
+                        
+                        temp = angle2quat(temp(1),temp(2),temp(3),'XYZ');
+                        if temp(1) < 0
+                           temp = temp; 
+                        end
+                        ee_orient = [temp(2:4)';temp(1)];
+                        varargout{iCount} = [ee_pos';ee_orient];
+                    end
+                    
                 end
                 
             end
             %y = [return_1,return_2];    
+            
       end
     
       function num = getNumInputsImpl(~)
-          num = 1;
+          num = 2;
       end
     
-      function num = getNumOutputsImpl(~)
-          num = 1;
+      function num = getNumOutputsImpl(obj)
+          num = obj.m_NumObservableObjects;
       end
 
       function icon = getIconImpl(~)
@@ -300,13 +327,13 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
       end
         
         function varargout = getInputNamesImpl(obj)
-            inputCount = 1;
+            inputCount = 2;
             for i=1:inputCount
                varargout{i} = sprintf('ControlPose(%d)',obj.m_NumControllableObjects);
             end
         end
         function varargout = getOutputNamesImpl(obj)
-           outputCount = 1;
+           outputCount = obj.m_NumObservableObjects;
            for i=1:outputCount
                varargout{i} = sprintf('ObservePose(%d)',obj.m_NumObservableObjects);
            end
@@ -319,41 +346,45 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
            if (outputObjectCount == 0)
                varargout{1} = 1;
            end
-           for iCount = obj.m_NumObservableObjects
+           for iCount = 1:obj.m_NumObservableObjects
               string_mode = char(obj.m_ObserveObjects(iCount,2));
               switch(string_mode)
                   case 'Image'
-                      varargout{1} = [1024,1024];
+                      varargout{iCount} = [512,512];
+                  case 'Pose'
+                      varargout{iCount} = [7,1];
               end
                   
            end
            
         end
         function varargout = getOutputDataTypeImpl(obj)
-           outputCount = 1;
+           outputCount = obj.m_NumObservableObjects;
            varargout= cell(outputCount);
            for i=1:outputCount
               varargout{i} = 'double'; 
            end
-           for iCount = obj.m_NumObservableObjects
+           for iCount = 1:obj.m_NumObservableObjects
               string_mode = char(obj.m_ObserveObjects(iCount,2));
               switch(string_mode)
                   case 'Image'
                       varargout{iCount} = 'uint8';
+                  case 'Pose'
+                      varargout{iCount} = 'single';                      
               end
                   
            end
            
         end
         function varargout= isOutputComplexImpl(obj)
-           outputCount = 1;
+           outputCount = obj.m_NumObservableObjects;
            varargout= cell(outputCount);
            for i=1:outputCount
               varargout{i} = false; 
            end 
         end
         function varargout = isOutputFixedSizeImpl(obj)
-           outputCount = 1;
+           outputCount = obj.m_NumObservableObjects;
            varargout= cell(outputCount);
            for i=1:outputCount
               varargout{i} = true; 
