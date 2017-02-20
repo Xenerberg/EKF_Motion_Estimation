@@ -24,7 +24,7 @@ ita = [0.5;0.5;0.5;0.5];
 rho_c = [-0.00036;   -0.9865;   -0.1854];
 rho = [0.04;0;0.3];
 ieps = [-0.7071;0;0;0.7071];
-n = 0.0012;
+n = 0.00;
 
 
 om = struct;
@@ -117,7 +117,7 @@ tau_3 = 0;
 
 totalSimulationTime = 100;
 
-X_a_0 = [0; 0; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0];
+X_a_0 = [0; 0; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0];%rho;ieps];
 
 X_a_0_bus = struct;
 X_a_0_bus.block = [];
@@ -313,4 +313,14 @@ x_k.Complexity = 'auto';
 x_k.SampleTime = -1;
 x_k.SamplingMode = 'auto';
 x_k.InitialValue = '';
+
+%New additions for the model
+lenLinks(1) = 0.0085;
+lenLinks(2) = 0.0661;
+lenLinks(3) = 0.4251;
+lenLinks(4) = 0.3922;
+lenLinks(5) = 0.1100;
+lenLinks(6) = 0.0948;
+lenLinks(7) = 0.0750;
+
 

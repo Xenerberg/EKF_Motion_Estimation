@@ -112,7 +112,8 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                qualifier = char(varargin{1}(iCount,2));
                switch(qualifier)
                    case 'Image'
-                   case 'Pose'                       
+                   case 'Pose'   
+                   case 'Joint'
                    otherwise
                        error('Data type of observable:(%s) is incorrect.',qualifier);
                end
@@ -280,6 +281,8 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
             if (obj.m_NumObservableObjects == 0)
                 varargout = -1;
             else
+                jointCount = 0;
+                j_1 = zeros(6,1);
                 for iCount = 1:obj.m_NumObservableObjects
                     string_objectname = char(obj.m_ObserveObjects(iCount,1));
                 
@@ -307,6 +310,12 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                         varargout{iCount} = [ee_pos';ee_orient];
                     end
                     
+                    if strcmp(obj.m_ObserveObjects(iCount,2),'Joint') == 1
+                        jointCount = jointCount + 1;
+                        [rtrn, j_1(jointCount)] = obj.m_vrep.simxGetJointPosition(obj.m_clientID, m_h_object, obj.m_vrep.simx_opmode_blocking);
+                        varargout{iCount} = j_1(jointCount);
+                    end
+                    
                 end
                 
             end
@@ -329,13 +338,13 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
         function varargout = getInputNamesImpl(obj)
             inputCount = 2;
             for i=1:inputCount
-               varargout{i} = sprintf('ControlPose(%d)',obj.m_NumControllableObjects);
+               varargout{i} = sprintf('Control(%d)',i);
             end
         end
         function varargout = getOutputNamesImpl(obj)
            outputCount = obj.m_NumObservableObjects;
            for i=1:outputCount
-               varargout{i} = sprintf('ObservePose(%d)',obj.m_NumObservableObjects);
+               varargout{i} = sprintf('Observe(%d)',i);
            end
         end
         %Propagates Implementation
@@ -353,6 +362,8 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                       varargout{iCount} = [512,512];
                   case 'Pose'
                       varargout{iCount} = [7,1];
+                  case 'Joint'
+                      varargout{iCount} = [1,1];
               end
                   
            end
@@ -370,7 +381,9 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                   case 'Image'
                       varargout{iCount} = 'uint8';
                   case 'Pose'
-                      varargout{iCount} = 'single';                      
+                      varargout{iCount} = 'single';   
+                  case 'Joint'
+                      varargout{iCount} = 'double';
               end
                   
            end
