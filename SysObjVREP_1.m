@@ -302,7 +302,8 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                         [rtrn,ee_pos] = obj.m_vrep.simxGetObjectPosition(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);            
                         [rtrn,temp] = obj.m_vrep.simxGetObjectOrientation(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);
                         
-                        temp = angle2quat(temp(1),temp(2),temp(3),'XYZ');
+                        temp = angle2dcm(temp(1),temp(2),temp(3),'XYZ')';
+                        temp = dcm2quat(temp');
                         if temp(1) < 0
                            temp = temp; 
                         end

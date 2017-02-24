@@ -117,7 +117,8 @@ tau_3 = 0;
 
 totalSimulationTime = 100;
 
-X_a_0 = [0; 0; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0];%rho;ieps];
+X_a_0 = [0; 0; 0; 1; 0; 0; 0; 0; 0; 0; 0; 0; 0;rho_c;ieps];
+X_a_0 = [0;0;0.707000000000000;0.707000000000000;0.200000000000000;-0.0200000000000000;0.000100000000000000;0.0200000000000000;-1.80000000000000;0.500000000000000;-0.0100000000000000;0.000100000000000000;0;rho_c;ieps];
 
 X_a_0_bus = struct;
 X_a_0_bus.block = [];
@@ -177,7 +178,7 @@ P_d.DataType = 'double';
 P_d.Min = [];
 P_d.Max = [];
 P_d.DocUnits = '';
-P_d.Dimensions = [12 12];
+P_d.Dimensions = [18 18];
 P_d.DimensionsMode = 'auto';
 P_d.Complexity = 'auto';
 P_d.SampleTime = -1;
@@ -191,7 +192,7 @@ P_k.DataType = 'double';
 P_k.Min = [];
 P_k.Max = [];
 P_k.DocUnits = '';
-P_k.Dimensions = [12 12];
+P_k.Dimensions = [18 18];
 P_k.DimensionsMode = 'auto';
 P_k.Complexity = 'auto';
 P_k.SampleTime = -1;
@@ -204,7 +205,7 @@ U_n_d.DataType = 'double';
 U_n_d.Min = [];
 U_n_d.Max = [];
 U_n_d.DocUnits = '';
-U_n_d.Dimensions = [12 12];
+U_n_d.Dimensions = [18 18];
 U_n_d.DimensionsMode = 'auto';
 U_n_d.Complexity = 'auto';
 U_n_d.SampleTime = -1;
@@ -293,7 +294,7 @@ x_d.DataType = 'double';
 x_d.Min = [];
 x_d.Max = [];
 x_d.DocUnits = '';
-x_d.Dimensions = [12 1];
+x_d.Dimensions = [18 1];
 x_d.DimensionsMode = 'auto';
 x_d.Complexity = 'auto';
 x_d.SampleTime = -1;
@@ -307,20 +308,12 @@ x_k.DataType = 'double';
 x_k.Min = [];
 x_k.Max = [];
 x_k.DocUnits = '';
-x_k.Dimensions = [13 1];
+x_k.Dimensions = [20 1];
 x_k.DimensionsMode = 'auto';
 x_k.Complexity = 'auto';
 x_k.SampleTime = -1;
 x_k.SamplingMode = 'auto';
 x_k.InitialValue = '';
 
-%New additions for the model
-lenLinks(1) = 0.0085;
-lenLinks(2) = 0.0661;
-lenLinks(3) = 0.4251;
-lenLinks(4) = 0.3922;
-lenLinks(5) = 0.1100;
-lenLinks(6) = 0.0948;
-lenLinks(7) = 0.0750;
-
-
+P_0 = 0.5*eye(18,18);
+P_0(13:18,13:18) = 0.0005*eye(6,6);
