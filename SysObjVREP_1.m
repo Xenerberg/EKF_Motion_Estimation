@@ -1,4 +1,4 @@
-classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab.system.mixin.Propagates
+classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon &  matlab.system.mixin.Nondirect & matlab.system.mixin.Propagates
 % SysObjVREP - connect to VREP and execute Remote API functions
 %
 
@@ -91,7 +91,7 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                    case 'Abs'
                    case 'Joint'
                    otherwise
-                       error('Pose reference:(%s) is incorrect.',qualifier);
+                       %error('Pose reference:(%s) is incorrect.',qualifier);
                end
             end
             obj.m_ControlObjects = varargin{1};
@@ -115,7 +115,7 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                    case 'Pose'   
                    case 'Joint'
                    otherwise
-                       error('Data type of observable:(%s) is incorrect.',qualifier);
+                       %error('Data type of observable:(%s) is incorrect.',qualifier);
                end
             end
             obj.m_NumObservableObjects = size(varargin{1},1);
@@ -166,7 +166,12 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
   methods(Access=protected)
 
       %% Common functions  
-      
+        function [flag1,flag2,flag3] = isInputDirectFeedthroughImpl(Obj,u1,u2,u3)
+            flag1 = false;
+            flag3 = false;
+            flag2 = false;
+        end
+        
         function setupImpl(obj)
             % Implement tasks that need to be performed only once,
             % such as pre-computed constants.
@@ -218,7 +223,7 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
         end
      
       
-      function [varargout] = stepImpl(obj,poseInputs,jointAngles)
+      function updateImpl(obj,poseInputs,jointAngles,controlTrigger)
             jointCount = 0;
             %obj.m_vrep.simxGetPingTime(obj.m_clientID);%Ensures data correctness throught triggers
             [cmd_time] = obj.m_vrep.simxGetLastCmdTime(obj.m_clientID);
@@ -242,17 +247,18 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                    error('Error in retrieving handle for object:%s',string_objectname); 
                 end
                 string_mode = char(obj.m_ControlObjects(iCount,2));
-                if strcmp(string_mode,'Parent')==1 || strcmp(string_mode,'Abs')==1 
+                if strcmp(string_mode,'Joint') ~= 1 
                     pose = poseInputs(iCount*6-5:iCount*6);
                     position = pose(1:3);
                     orientation = pose(4:6);
+                    m_h_rel = 0;
                     switch(string_mode)
                         case 'Parent'
                             qualifier = obj.m_vrep.sim_handle_parent;
                         case 'Abs'
                             qualifier = -1;
                         otherwise
-                            qualifier = -1;
+                            [~,qualifier] = obj.m_vrep.simxGetObjectHandle(obj.m_clientID,string_mode,obj.m_vrep.simx_opmode_blocking);
 
                     end
 
@@ -276,8 +282,24 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                 end
             
             end
-          
-            obj.m_vrep.simxSynchronousTrigger(obj.m_clientID);
+            if controlTrigger > 0
+                obj.m_vrep.simxSynchronousTrigger(obj.m_clientID);
+            end
+             
+            
+      end
+      function [varargout] = outputImpl(obj,~,~,~)
+            
+            %obj.m_vrep.simxGetPingTime(obj.m_clientID);%Ensures data correctness throught triggers
+            [cmd_time] = obj.m_vrep.simxGetLastCmdTime(obj.m_clientID);
+            sim_time = get_param(bdroot,'SimulationTime');
+            %Problem with Float point number comparisons. (1% of VREP
+            %sampling time)
+            %fprintf('LastCmdTime(VREP):%f; SimTime(SimulationTime):%f\n',cmd_time/1000,sim_time);
+            if (abs(sim_time - (cmd_time/1000)) > 0.01*0.05) 
+                %error('Error in simulation syncrhonization.\nLastCmdTime(VREP):%f; SimTime(SimulationTime):%f\n',cmd_time/1000,sim_time);
+                
+            end
             if (obj.m_NumObservableObjects == 0)
                 varargout = -1;
             else
@@ -300,15 +322,31 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                     if strcmp(obj.m_ObserveObjects(iCount,2),'Pose') == 1
                         [return_msg,m_h_object_rel] = obj.m_vrep.simxGetObjectHandle(obj.m_clientID,char(obj.m_ObserveObjects(iCount,3)),obj.m_vrep.simx_opmode_blocking);
                         [rtrn,ee_pos] = obj.m_vrep.simxGetObjectPosition(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);            
-                        [rtrn,temp] = obj.m_vrep.simxGetObjectOrientation(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);
+                        [rtrn,temp] = obj.m_vrep.simxGetObjectOrientation(obj.m_clientID, m_h_object,m_h_object_rel,obj.m_vrep.simx_opmode_blocking);                       
                         
-                        temp = angle2dcm(temp(1),temp(2),temp(3),'XYZ')';
-                        temp = dcm2quat(temp');
+                        str_print = sprintf('a: %f, b: %f, c:%f\n',temp(1)*180/pi,temp(2)*180/pi,temp(3)*180/pi);
+                        %obj.m_vrep.simxAuxiliaryConsolePrint(obj.m_clientID,obj.m_h_consoleWindow, str_print,obj.m_vrep.simx_opmode_blocking);
                         if temp(1) < 0
-                           temp = temp; 
+                            %temp(1) = 2*pi + temp(1);
                         end
-                        ee_orient = [temp(2:4)';temp(1)];
-                        varargout{iCount} = [ee_pos';ee_orient];
+                        if temp(3) < 0
+                            %temp(3) = 2*pi + temp(3);
+                        end
+                        if temp(2) < 0
+                            %   temp(2) = 2*pi + temp(2);
+                        end
+                        [temp] = angle2dcm(temp(1),temp(2),temp(3),'XYZ');     
+                        [temp] = dcm2quat(temp);     
+                        %temp = angle2dcm(temp(1),0,0,'XYZ')*angle2dcm(0,temp(2),0,'XYZ')*angle2dcm(0,0,temp(3),'XYZ');                        
+                        %temp = dcm2quat(temp');
+                        %temp = angle2quat(temp(1),temp(2),temp(3),'XYZ');
+                        %temp = -temp;                        
+                        ee_pos = ee_pos';                        
+                        ee_orient = quatnormalize(temp + normrnd(0,sqrt(1e-5),[1,4]));
+                        ee_orient = [ee_orient(2:4)';ee_orient(1)];
+                        ee_pos =  (ee_pos+ normrnd(0,sqrt(3e-5),[3,1]));
+                        
+                        varargout{iCount} = [ee_pos;ee_orient];
                     end
                     
                     if strcmp(obj.m_ObserveObjects(iCount,2),'Joint') == 1
@@ -320,12 +358,13 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                 end
                 
             end
-            %y = [return_1,return_2];    
-            
+            %y = [return_1,return_2];   
+          
       end
+      
     
-      function num = getNumInputsImpl(~)
-          num = 2;
+      function num = getNumInputsImpl(obj)
+          num = 3;
       end
     
       function num = getNumOutputsImpl(obj)
@@ -415,7 +454,7 @@ classdef SysObjVREP_1 < matlab.System &  matlab.system.mixin.CustomIcon & matlab
                    dt = 'double';
                    cp = false;  
            end
-        end
+        end  
    
-  end
+  end   
 end
